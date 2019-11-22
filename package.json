@@ -1,0 +1,32 @@
+{
+  "name": "graphql-event",
+  "version": "1.0.0",
+  "description": "An event booking application built in GraphQL and React",
+  "main": "server.js",
+  "scripts": {
+    "test": "jest",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sunguru98/MERNG-Event-booking-app.git"
+  },
+  "keywords": [
+    "Event",
+    "booking",
+    "app"
+  ],
+  "author": "Sundeep Charan Ramkumar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sunguru98/MERNG-Event-booking-app/issues"
+  },
+  "homepage": "https://github.com/sunguru98/MERNG-Event-booking-app#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.7.12"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.1"
+  }
+}
