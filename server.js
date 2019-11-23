@@ -1,12 +1,15 @@
 const express = require('express')
+// Dotenv configure
+require('dotenv').config()
 // Database
 require('./db')
 // Parser for graphQl to point the incoming request towards respected resolvers
 const graphQlHttp = require('express-graphql')
 // Used to define the schemas (mutations and resolvers)
 const { buildSchema } = require('graphql')
-const app = express()
 
+const Event = require('./models/Event')
+const app = express()
 const events = []
 
 app.use(express.json())
@@ -46,16 +49,20 @@ app.use(
       events() {
         return events
       },
-      createEvent({ event: { name, description, eventPrice } }) {
-        const newEvent = {
-          _id: Math.random().toString(),
-          name,
-          description,
-          eventPrice,
-          createdAt: new Date().toISOString()
+      async createEvent({ event: { name, description, eventPrice } }) {
+        try {
+          const event = new Event({
+            name,
+            description,
+            eventPrice
+          })
+          await event.save()
+          events.push(event)
+          return event
+        } catch (err) {
+          console.log(err)
+          throw err
         }
-        events.push(newEvent)
-        return newEvent
       }
     },
     graphiql: true

@@ -2,10 +2,7 @@ const mongoose = require('mongoose')
 
 mongoose
   .connect(
-    'mongodb+srv://sundeep:<password>@cluster0-d9tfh.mongodb.net/Events-GraphQL?retryWrites=true&w=majority'.replace(
-      '<password>',
-      'Sundeep1998'
-    ),
+    process.env.MONGODB_URI.replace('<password>', process.env.MONGODB_PASSWORD),
     {
       useNewUrlParser: true,
       useCreateIndex: true,
