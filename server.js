@@ -1,21 +1,39 @@
 const express = require('express')
+// Database
+require('./db')
 // Parser for graphQl to point the incoming request towards respected resolvers
 const graphQlHttp = require('express-graphql')
 // Used to define the schemas (mutations and resolvers)
 const { buildSchema } = require('graphql')
-
 const app = express()
+
+const events = []
+
 app.use(express.json())
 app.use(
   '/graphql',
   graphQlHttp({
     schema: buildSchema(`
+      input EventInput {
+        name: String!,
+        description: String!,
+        eventPrice: Float!
+      }
+
+      type Event {
+        _id: String!,
+        name: String!,
+        description: String!,
+        eventPrice: Float!,
+        createdAt: String!
+      }
+
       type RootQuery {
-        events: [String!]!
+        events: [Event!]!
       }
 
       type RootMutation {
-        createEvent(name: String): String
+        createEvent(event: EventInput): Event
       }
 
       schema {
@@ -26,10 +44,17 @@ app.use(
     // Resolvers for the query and mutation
     rootValue: {
       events() {
-        return ['Event1', 'Event2', 'Event3']
+        return events
       },
-      createEvent({ name }) {
-        const newEvent = name
+      createEvent({ event: { name, description, eventPrice } }) {
+        const newEvent = {
+          _id: Math.random().toString(),
+          name,
+          description,
+          eventPrice,
+          createdAt: new Date().toISOString()
+        }
+        events.push(newEvent)
         return newEvent
       }
     },
