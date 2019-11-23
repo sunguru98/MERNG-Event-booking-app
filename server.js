@@ -9,8 +9,9 @@ const graphQlHttp = require('express-graphql')
 const { buildSchema } = require('graphql')
 
 const Event = require('./models/Event')
+const User = require('./models/User')
+
 const app = express()
-const events = []
 
 app.use(express.json())
 app.use(
@@ -23,11 +24,26 @@ app.use(
         eventPrice: Float!
       }
 
+      input UserInput {
+        name: String!
+        email: String!
+        password: String!
+      }
+
       type Event {
         _id: String!,
         name: String!,
         description: String!,
         eventPrice: Float!,
+        createdAt: String!,
+        user: String!      
+      }
+
+      type User {
+        _id: String!,
+        name: String!,
+        password: String,
+        email: String!
         createdAt: String!
       }
 
@@ -37,6 +53,7 @@ app.use(
 
       type RootMutation {
         createEvent(event: EventInput): Event
+        createUser(user: UserInput): User
       }
 
       schema {
@@ -46,9 +63,11 @@ app.use(
     `),
     // Resolvers for the query and mutation
     rootValue: {
-      events() {
+      async events() {
+        const events = await Event.find({}).sort('-createdAt')
         return events
       },
+
       async createEvent({ event: { name, description, eventPrice } }) {
         try {
           const event = new Event({
@@ -56,11 +75,29 @@ app.use(
             description,
             eventPrice
           })
+          event.user = '5dd92b7878d796931da7239a'
           await event.save()
-          events.push(event)
+          const user = await User.findById('5dd92b7878d796931da7239a')
+          user.events.push(event._id)
+          await user.save()
           return event
         } catch (err) {
           console.log(err)
+          throw err
+        }
+      },
+
+      async createUser({ user: { email, password, name } }) {
+        try {
+          let user = await User.findOne({ email })
+          if (user) throw 'User already exists'
+          user = new User({ name, email, password })
+          await user.save()
+          user = user.toObject()
+          delete user.password
+          return user
+        } catch (err) {
+          console.error(err)
           throw err
         }
       }
