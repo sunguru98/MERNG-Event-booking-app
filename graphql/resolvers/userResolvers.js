@@ -7,10 +7,18 @@ module.exports = {
       let user = await User.findOne({ email })
       if (user) throw 'User already exists'
       user = new User({ name, email, password })
-      await user.save()
+      const accessToken = await user.generateAccessToken()
       user = user.toObject()
-      delete user.password
-      return { ...user, createdAt: new Date(user.createdAt).toISOString() }
+      return {
+        user: {
+          ...user,
+          createdAt: new Date(user.createdAt).toISOString(),
+          events: getEvents.bind(this, user.events),
+          password: null
+        },
+        accessToken: `Bearer ${accessToken}`,
+        expiresIn: '24hr'
+      }
     } catch (err) {
       console.error(err)
       throw err
