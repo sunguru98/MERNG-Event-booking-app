@@ -1,10 +1,15 @@
 const express = require('express')
+const authenticate = require('./middleware/authenticate')
 // Dotenv configure
 require('dotenv').config()
 // Database
 require('./db')
-// require('./models/Event').deleteMany().then(() => console.log('Done'))
-// require('./models/Booking').deleteMany().then(() => console.log('Done'))
+// require('./models/Event')
+//   .deleteMany()
+//   .then(() => console.log('Done'))
+// require('./models/Booking')
+//   .deleteMany()
+//   .then(() => console.log('Done'))
 // Parser for graphQl to point the incoming request towards respected resolvers
 const graphQlHttp = require('express-graphql')
 const schema = require('./graphql/schemas')
@@ -13,6 +18,7 @@ const rootValue = require('./graphql/resolvers')
 const app = express()
 
 app.use(express.json())
+app.use(authenticate)
 app.use(
   '/graphql',
   graphQlHttp({

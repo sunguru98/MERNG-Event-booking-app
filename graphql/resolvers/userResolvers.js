@@ -25,7 +25,7 @@ module.exports = {
       return {
         user: {
           ...user.toObject(),
-          events: getEvents(user.events),
+          events: getEvents.bind(this, user.events),
           password: null
         },
         accessToken: `Bearer ${accessToken}`,
