@@ -1,11 +1,12 @@
 const { Schema, model } = require('mongoose')
-const { hash } = require('bcryptjs')
+const { hash, compare } = require('bcryptjs')
+const { sign } = require('jsonwebtoken')
 
 const userSchema = new Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true },
-    password: { type: String, required: true, select: false },
+    password: { type: String, required: true },
     events: [{ type: Schema.Types.ObjectId, ref: 'event' }],
     accessToken: String
   },
@@ -26,6 +27,34 @@ userSchema.methods = {
     delete user.password
     delete user.__v
     return user
+  },
+
+  generateAccessToken: async function() {
+    const user = this
+    const accessToken = await sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '24hr'
+    })
+    user.accessToken = accessToken
+    await user.save()
+    return accessToken
+  }
+}
+
+userSchema.statics = {
+  findByEmailAndPassword: async (email, password) => {
+    try {
+      const user = await User.findOne({ email })
+      if (!user) throw new Error('Invalid Credentials')
+      const matched = await compare(password, user.password)
+      if (!matched) {
+        user.accessToken = null
+        user.save()
+        throw new Error('Invalid Credentials')
+      }
+      return user
+    } catch (err) {
+      throw err
+    }
   }
 }
 

@@ -14,8 +14,15 @@ input UserInput {
   password: String!
 }
 
+type Booking {
+  _id: ID!,
+  user: User!,
+  event: Event!,
+  createdAt: String!
+}
+
 type Event {
-  _id: String!,
+  _id: ID!,
   name: String!,
   description: String!,
   eventPrice: Float!,
@@ -24,21 +31,32 @@ type Event {
 }
 
 type User {
-  _id: String!,
+  _id: ID!,
   name: String!,
   password: String,
+  accessToken: String
   email: String!
   createdAt: String!
   events: [Event!]
 }
 
+type Auth {
+  user: User!,
+  accessToken: String!,
+  expiresIn: String!
+}
+
 type RootQuery {
   events: [Event!]!
+  bookings: [Booking!]!
 }
 
 type RootMutation {
   createEvent(event: EventInput): Event
   createUser(user: UserInput): User
+  loginUser(email: String!, password: String!): Auth
+  bookEvent(eventId: ID!): Booking
+  cancelBooking(bookingId: ID!): Event
 }
 
 schema {
