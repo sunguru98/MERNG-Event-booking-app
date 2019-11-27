@@ -2,6 +2,7 @@ const { Schema, model } = require('mongoose')
 const { hash, compare } = require('bcryptjs')
 const { sign } = require('jsonwebtoken')
 const Event = require('./Event')
+const Booking = require('./Booking')
 
 const userSchema = new Schema(
   {
@@ -62,6 +63,7 @@ userSchema.statics = {
 userSchema.pre('remove', async function (next) {
   const user = this.toObject()
   await Event.deleteMany({ user: user._id })
+  await Booking.deleteMany({ user: user._id })
   next()
 })
 

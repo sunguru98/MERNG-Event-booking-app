@@ -3,9 +3,17 @@ import Portal from '../components/Portal'
 
 import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
-import { selectEventEvents } from '../redux/selectors/eventSelectors'
+import {
+  selectEventEvents,
+  selectEventBookings
+} from '../redux/selectors/eventSelectors'
 import { selectAuthUser } from '../redux/selectors/authSelectors'
-import { createEvent, fetchEvents } from '../redux/actions/eventActions'
+import {
+  createEvent,
+  fetchEvents,
+  bookEvent,
+  fetchBookings
+} from '../redux/actions/eventActions'
 import { Redirect } from 'react-router-dom'
 
 import {
@@ -22,8 +30,18 @@ import {
   SubmitButton
 } from '../styles/commonStyles'
 
-export const EventsPage = ({ user, createEvent, fetchEvents, events }) => {
+export const EventsPage = ({
+  user,
+  createEvent,
+  fetchEvents,
+  fetchBookings,
+  events,
+  bookings,
+  bookEvent
+}) => {
   const [editMode, setEditMode] = useState(false)
+  const [viewMode, setViewMode] = useState(false)
+  const [event, setEvent] = useState('')
   const [formState, setFormState] = useState({
     name: '',
     description: '',
@@ -32,11 +50,13 @@ export const EventsPage = ({ user, createEvent, fetchEvents, events }) => {
 
   useEffect(() => {
     fetchEvents()
-  }, [fetchEvents])
+    fetchBookings()
+  }, [fetchEvents, fetchBookings])
 
   useEffect(() => {
     setEditMode(false)
-  }, [events])
+    setViewMode(false)
+  }, [events, bookings])
 
   if (!user) return <Redirect to='/auth' />
   const { name, description, eventPrice } = formState
@@ -49,6 +69,11 @@ export const EventsPage = ({ user, createEvent, fetchEvents, events }) => {
     createEvent({ name, description, eventPrice })
   }
 
+  const viewEvent = eventId => {
+    setViewMode(true)
+    setEvent(events.find(event => event._id === eventId))
+  }
+
   return (
     <EventsContainer>
       <EventHeader>
@@ -59,13 +84,27 @@ export const EventsPage = ({ user, createEvent, fetchEvents, events }) => {
       </EventHeader>
       {events ? (
         <EventBody>
-          {events.map(({ _id, name, description, eventPrice }) => (
-            <EventItem key={_id}>
-              <h3>{name}</h3>
-              <p>{description}</p>
-              <p>${eventPrice}</p>
-            </EventItem>
-          ))}
+          {events.map(
+            ({ _id, name, description, eventPrice, ...restProps }) => (
+              <EventItem key={_id}>
+                <h3>{name}</h3>
+                <p>{description}</p>
+                <p>${eventPrice}</p>
+                {user._id !== restProps.user._id && (
+                  <Button
+                    onClick={viewEvent.bind(this, _id)}
+                    style={{
+                      maxHeight: '5rem',
+                      position: 'absolute',
+                      top: '1rem',
+                      right: '1rem'
+                    }}>
+                    View Details
+                  </Button>
+                )}
+              </EventItem>
+            )
+          )}
         </EventBody>
       ) : (
         <h2>Loading Events ...</h2>
@@ -108,19 +147,37 @@ export const EventsPage = ({ user, createEvent, fetchEvents, events }) => {
           </EventCreateForm>
         </Portal>
       )}
+      {viewMode && (
+        <Portal onClick={() => setViewMode(false)}>
+          <h2>Event details</h2>
+          <p>{event.name}</p>
+          <p>{event.description}</p>
+          <p>{event.eventPrice}</p>
+          {bookings.find(b => b.event._id === event._id) ? (
+            <p>You have already made a booking to this event</p>
+          ) : (
+            <Button onClick={bookEvent.bind(this, event._id)}>
+              Book Event
+            </Button>
+          )}
+        </Portal>
+      )}
     </EventsContainer>
   )
 }
 
 const mapStateToProps = createStructuredSelector({
   user: selectAuthUser,
-  events: selectEventEvents
+  events: selectEventEvents,
+  bookings: selectEventBookings
 })
 
 const mapDispatchToProps = dispatch => ({
   fetchEvents: () => dispatch(fetchEvents()),
+  fetchBookings: () => dispatch(fetchBookings()),
   createEvent: (name, description, eventPrice) =>
-    dispatch(createEvent(name, description, eventPrice))
+    dispatch(createEvent(name, description, eventPrice)),
+  bookEvent: eventId => dispatch(bookEvent(eventId))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(EventsPage)

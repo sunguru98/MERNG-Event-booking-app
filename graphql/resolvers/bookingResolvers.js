@@ -7,7 +7,7 @@ module.exports = {
       if (!isAuthenticated) throw new Error('Incorrect Credentials')
       const bookings = await Booking.find({}).sort('-createdAt')
       return bookings.map(b => ({
-        ...b._doc,
+        _id: b._id,
         event: getEvent.bind(this, b.event),
         user: getUser.bind(this, b.user)
       }))

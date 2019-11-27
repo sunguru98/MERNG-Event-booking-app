@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose')
+const Booking = require('./Booking')
 
 const eventSchema = new Schema(
   {
@@ -17,6 +18,11 @@ eventSchema.methods = {
     return event
   }
 }
+
+eventSchema.pre('remove', async function(next) {
+  await Booking.deleteMany({ event: this._id })
+  next()
+})
 
 const Event = model('event', eventSchema)
 module.exports = Event

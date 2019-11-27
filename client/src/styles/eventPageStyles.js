@@ -17,6 +17,7 @@ export const EventBody = styled.ul`
 `
 
 export const EventItem = styled.li`
+  position: relative;
   width: 100%;
   background: white;
   border-radius: 5px;
