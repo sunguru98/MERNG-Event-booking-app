@@ -1,9 +1,6 @@
 import React, { useState } from 'react'
-import {
-  AuthPageContainer,
-  FormContainer,
-  FormInput
-} from '../styles/authStyles'
+import { AuthPageContainer, FormContainer } from '../styles/authStyles'
+import { SubmitButton, FormInput } from '../styles/commonStyles'
 
 import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -72,9 +69,8 @@ const AuthPage = ({ loginUser, registerUser, user }) => {
               ? 'Already Registered ? Sign in'
               : 'New User ? Sign up'}
           </span>
-          <FormInput
+          <SubmitButton
             onChange={handleChange}
-            type='submit'
             value={`${loginState ? 'Sign in' : 'Sign up'}`}
           />
         </form>

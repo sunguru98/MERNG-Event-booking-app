@@ -5,7 +5,7 @@ import {
   loginMutation,
   registerMutation,
   logoutMutation
-} from '../graphql/mutation'
+} from '../graphql/mutations/authMutations'
 import { takeLatest, put, all, call } from 'redux-saga/effects'
 const {
   LOGIN_USER,
@@ -13,6 +13,7 @@ const {
   SET_ACCESS_TOKEN,
   SET_USER,
   CLEAR_AUTH,
+  CLEAR_EVENTS,
   LOGOUT_USER
 } = actionTypes
 
@@ -73,6 +74,7 @@ function* onLogout() {
       if (errors !== undefined) throw errors[0].message
       yield alert(data.logoutUser)
       yield put({ type: CLEAR_AUTH })
+      yield put({ type: CLEAR_EVENTS })
     } catch (err) {
       yield alert(err)
     }
