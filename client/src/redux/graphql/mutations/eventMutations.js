@@ -5,6 +5,9 @@ export const fetchEventsMu = () => `
       name
       description
       eventPrice
+      creator {
+        _id
+      }
     }
   }
 `
@@ -16,6 +19,9 @@ export const createEventMu = ({ name, description, eventPrice }) => `
       name
       description
       eventPrice
+      creator {
+        _id
+      }
     }
   }
 `

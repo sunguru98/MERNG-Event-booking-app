@@ -52,6 +52,7 @@ type RootQuery {
 }
 
 type RootMutation {
+  logoutUser: String!,
   createEvent(event: EventInput): Event
   createUser(user: UserInput): Auth
   loginUser(email: String!, password: String!): Auth

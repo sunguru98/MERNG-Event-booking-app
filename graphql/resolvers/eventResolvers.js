@@ -34,6 +34,7 @@ module.exports = {
         createdAt: new Date(event.createdAt).toISOString()
       }
     } catch (err) {
+      console.log(err)
       throw err
     }
   }

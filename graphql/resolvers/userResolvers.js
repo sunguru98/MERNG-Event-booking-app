@@ -40,7 +40,17 @@ module.exports = {
         expiresIn: '24hr'
       }
     } catch (err) {
-      console.log(err)
+      throw new Error(err)
+    }
+  },
+
+  async logoutUser(args, { isAuthenticated, user }) {
+    try {
+      if (!isAuthenticated || !user) throw new Error('Incorrect Credentials')
+      user.accessToken = null
+      await user.save()
+      return 'Logged out successfully'
+    } catch (err) {
       throw err
     }
   }
