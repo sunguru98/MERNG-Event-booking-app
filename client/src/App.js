@@ -4,8 +4,12 @@ import AuthPage from './pages/AuthPage'
 import BookingsPage from './pages/BookingsPage'
 import { Switch, Route } from 'react-router-dom'
 import NavBar from './components/NavBar'
+import Axios from 'axios'
 
 const App = () => {
+  const accessToken = sessionStorage.getItem('accessToken')
+  if (accessToken) Axios.defaults.headers.common['Authorization'] = accessToken
+  Axios.defaults.headers.post['Content-Type'] = 'application/json'
   return (
     <div className='App'>
       <NavBar />

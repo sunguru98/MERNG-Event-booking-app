@@ -25,3 +25,9 @@ export const registerMutation = (name, email, password) => `
     }
   }
 `
+
+export const logoutMutation = () => `
+  mutation {
+    logoutUser
+  }
+`

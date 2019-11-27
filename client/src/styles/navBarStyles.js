@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { NavLink } from 'react-router-dom'
 
 export const NavBarContainer = styled.header`
@@ -24,8 +24,11 @@ export const NavBarLinks = styled.ul`
   padding: 0;
   list-style: none;
 `
-export const NavBarItem = styled(NavLink)`
+
+const NavBarLinkStyles = css`
   color: white;
+  cursor: pointer;
+  display: inline-block;
   text-decoration: none;
   transition: 0.3s ease-in-out;
   font-size: 1.6rem;
@@ -35,4 +38,11 @@ export const NavBarItem = styled(NavLink)`
   &:hover {
     color: black;
   }
+`
+
+export const NavBarItem = styled(NavLink)`
+  ${NavBarLinkStyles}
+`
+export const NavBarItemN = styled.li`
+  ${NavBarLinkStyles}
 `
