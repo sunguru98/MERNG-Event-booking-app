@@ -3,11 +3,16 @@ import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
 
-import { BrowserRouter as Router } from 'react-router-dom'
+import { Router } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import store from './redux/store'
+import history from './redux/history'
 
 ReactDOM.render(
-  <Router>
-    <App />
-  </Router>,
+  <Provider store={store}>
+    <Router history={history}>
+      <App />
+    </Router>
+  </Provider>,
   document.getElementById('root')
 )

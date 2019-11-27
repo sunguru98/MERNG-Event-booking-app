@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
-import styled from "styled-components";
+import { connect } from 'react-redux'
+import { createStructuredSelector } from 'reselect'
+import { selectAuthUser } from '../redux/selectors/authSelectors'
+import { Redirect } from 'react-router-dom'
 
-export const BookingsPage = () => {
+export const BookingsPage = ({ user }) => {
+  if (!user) return <Redirect to='/auth' />
   return (
     <section>
       <h1>Bookings page</h1>
@@ -9,4 +13,8 @@ export const BookingsPage = () => {
   )
 }
 
-export default BookingsPage
+const mapStateToProps = createStructuredSelector({
+  user: selectAuthUser
+})
+
+export default connect(mapStateToProps)(BookingsPage)

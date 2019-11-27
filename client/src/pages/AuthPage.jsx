@@ -1,57 +1,17 @@
 import React, { useState } from 'react'
-import styled from 'styled-components'
-import axios from 'axios'
+import {
+  AuthPageContainer,
+  FormContainer,
+  FormInput
+} from '../styles/authStyles'
 
-const AuthPageContainer = styled.section`
-  min-height: calc(100vh - 3.5rem);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-`
+import { Redirect } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { createStructuredSelector } from 'reselect'
+import { selectAuthUser } from '../redux/selectors/authSelectors'
+import { loginUser, registerUser } from '../redux/actions/authActions'
 
-const FormContainer = styled.div`
-  background: white;
-  position: relative;
-  border-radius: 1rem;
-  padding: 2rem;
-  min-height: 60vh;
-  width: 40vw;
-`
-
-const FormInput = styled.input`
-  border: 1px solid orange;
-  border-radius: 5px;
-  outline: none;
-  &:not([type='submit']) {
-    display: block;
-    width: 100%;
-    padding: 1rem;
-    margin-top: 1.5rem;
-    &:not(:last-child) {
-      margin-bottom: 1.5rem;
-    }
-    &::placeholder {
-      color: orange;
-    }
-  }
-  &[type='submit'] {
-    cursor: pointer;
-    position: absolute;
-    bottom: 2rem;
-    padding: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    background: orange;
-    color: white;
-    font-weight: bold;
-    text-align: center;
-    border-radius: 1rem;
-  }
-`
-
-export const AuthPage = () => {
+const AuthPage = ({ loginUser, registerUser, user }) => {
   const [formState, setFormState] = useState({
     email: '',
     password: '',
@@ -75,55 +35,7 @@ export const AuthPage = () => {
     setLoginState(!loginState)
     setFormState({ name: '', email: '', password: '' })
   }
-
-  const registerUser = async (name, email, password) => {
-    const requestBody = {
-      query: `
-        mutation {
-          createUser(user: { email: "${email}", password: "${password}", name: "${name}" }) {
-            user {
-              _id
-              email
-              name
-            }
-            accessToken
-            expiresIn
-          }
-        }
-      `
-    }
-    const response = await axios.post('/graphql', JSON.stringify(requestBody), {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    console.log(response.data.createUser)
-  }
-
-  const loginUser = async (email, password) => {
-    const requestBody = {
-      query: `
-        mutation {
-          loginUser(email: "${email}", password: "${password}") {
-            user {
-              _id
-              email
-              name
-            }
-            accessToken
-            expiresIn
-          }
-        }
-      `
-    }
-    const response = await axios.post('/graphql', JSON.stringify(requestBody), {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    console.log(response.data.loginUser)
-  }
-
+  if (user) return <Redirect to='/events' />
   return (
     <AuthPageContainer>
       <FormContainer>
@@ -171,4 +83,14 @@ export const AuthPage = () => {
   )
 }
 
-export default AuthPage
+const mapStateToProps = createStructuredSelector({
+  user: selectAuthUser
+})
+
+const mapDispatchToProps = dispatch => ({
+  loginUser: (email, password) => dispatch(loginUser(email, password)),
+  registerUser: (name, email, password) =>
+    dispatch(registerUser(name, email, password))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(AuthPage)
